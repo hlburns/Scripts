@@ -1,0 +1,67 @@
+#! /bin/bash 
+
+#This job automatically submits jobs every 24 hours
+#Tell me you've started
+SUBJECT="autojob_submission mail"
+EMAIL="h.burns@noc.soton.ac.uk"
+EMAILMESSAGE="Autojob summission started"
+
+echo "$EMAILMESSAGE" | mail -s "$SUBJECT" "$EMAIL"
+
+# Check the job has done
+if [ -e pickup.0001382400.data ]
+  then
+    next1
+fi
+
+sleep 55000
+
+if [ -e pickup.0002764800.data ]
+  then
+    next2
+  else
+    EMAILMESSAGE="Check mobilis"
+    echo $EMAILMESSAGE | mail -s "SUBJECT""$EMAIL"
+
+fi
+
+sleep 55000
+
+if [ -e pickup.0004147200.data ]
+  then
+    next3
+    EMAILMESSAGE="Day 3 fine"
+    echo $EMAILMESSAGE | mail -s "SUBJECT""$EMAIL"
+
+  else
+    EMAILMESSAGE="Check Mobilis"
+    echo $EMAILMESSAGE | mail -s "SUBJECT""$EMAIL"
+
+fi
+
+sleep 55000
+
+if [ -e pickup.0005529600.data ]
+  then
+    next4
+  else
+    EMAILMESSAGE="Check Mobilis"
+    echo $EMAILMESSAGE | mail -s "SUBJECT""$EMAIL"
+
+fi
+
+sleep 55000
+
+if [ -e pickup.0015897600.data ]
+  then
+    next5
+  else
+    EMAILMESSAGE="Check Mobilis"
+    echo $EMAILMESSAGE | mail -s "SUBJECT""$EMAIL"
+fi
+
+
+
+EMAILMESSAGE="Upto year 50 OK"
+
+echo $EMAILMESSAGE | mail -s "SUBJECT""$EMAIL"

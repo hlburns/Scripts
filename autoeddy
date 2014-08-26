@@ -1,0 +1,59 @@
+#! /bin/bash 
+#glue_it &
+
+#This job automatically submits jobs every 24 hours                                                  
+#Tell me you've started                                                                              
+SUBJECT="autojob_submission mail"
+EMAIL="h.burns@noc.soton.ac.uk"
+EMAILMESSAGE="Autojob eddy summission started"
+
+echo "$EMAILMESSAGE" | mail -s "$SUBJECT" "$EMAIL"
+#ln -sf data.diagnosticseddy data.diagnostics
+#ln -sf data.pkg data.pkg_eddy
+#ln -sf run.script.128_eddies run.script.128
+nexteddy1
+sleep 3600
+nexteddy2
+sleep 3600
+nexteddy3
+sleep 3600
+nexteddy4
+sleep 3600
+nexteddy5
+sleep 3600
+nexteddy6
+sleep 3600
+nexteddy7
+sleep 3600
+nexteddy8
+sleep 3600
+nexteddy9
+sleep 3600
+nexteddy10
+sleep 3600
+nexteddy11
+sleep 3600
+nexteddy12
+sleep 3600
+nexteddy13
+sleep 3600
+nexteddy14
+sleep 3600
+nexteddy15
+sleep 3600
+nexteddy16
+sleep 3600
+nexteddy17
+sleep 3600
+nexteddy18
+sleep 3600
+nexteddy19
+sleep 3600
+nexteddy20
+
+EMAILMESSAGE="Successfully done 20 years of eddy output"
+echo "$EMAILMESSAGE" | mail -s "$SUBJECT""$EMAIL"
+
+
+
+
