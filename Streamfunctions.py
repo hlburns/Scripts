@@ -12,14 +12,14 @@ sys.path.append(os.path.expanduser('~')+"/bin/")
 from Calculations import MOC, find_nearest, regrid , RMOC, remap
 
 ''' We have 9 runs:
-    3,10,30,100,300,1000,3000,and Closed '''
+    3,10,30,100,300,1000,3000, 10000 and Closed '''
 if len(sys.argv) < 1:
    print '''\n    OOPSIE                                                                             
             usage:  give me a year to calculate over \n'''
    sys.exit(1)
 
 Year = sys.argv[1]
-tau=[3,10,30,100,300,1000,3000]
+tau=[3,10,30,100,300,1000,3000,10000,'Closed']
 
 #Check what files exist
 ''' Let me know what files are missing and only bother
@@ -69,7 +69,10 @@ AABW=[] # 200km from South
 Eddy=[]
 for i in range(len(Runs)):
     fname=str(tau[Runs[i]])+'daynokpp/'+Year+'all.nc'
-    Tau.append(tau[Runs[i]])
+    if tau[Runs[i]]=='Closed':
+       Tau.append(100000)
+    else:  
+       Tau.append(tau[Runs[i]])
     #MOC
     psi,T=MOC(fname,Y,Z,Zp)
     d=np.nonzero(yc==find_nearest(yc,1200))[0][0]
@@ -172,3 +175,19 @@ plt.ylim(0,np.max(abs(Eddy))+0.5)
 x=( os.path.expanduser('~')+"/Figures/")
 plt.savefig(x+'/EddyALL'+Year+'.png')
 plt.clf()
+#6) ALL on ONE!!
+plt.scatter(Relax,abs(Eddy),c='b', marker='o',label='Eddy')
+plt.scatter(Relax,abs(AABW),c='b', marker='s',label='AABW(S)')
+plt.scatter(Relax,abs(MOC),c='r', marker='x',label='MOC')
+plt.scatter(Relax,abs(Sruf),c='r', marker='D',label='Surface MOC')
+plt.scatter(Relax,abs(Psires1),c='b', marker='v',label='AAIW')
+plt.scatter(Relax,Psires2,c='r', marker='+',label='NADW')
+plt.scatter(Relax,abs(Psires3),c='b', marker='^',label='AABW')
+plt.title("Max Stream Functions illustrating various cells (see reference figure)")
+plt.xlabel(r'Relaxation timescale ($\tau$) in days')
+plt.ylabel('RMOC strength (Sv)')
+plt.xscale('log')
+lgd=legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+#plt.ylim(0,np.max(Surf)+0.1)
+x=( os.path.expanduser('~')+"/Figures/")
+plt.savefig(x+'/AllStreamFunctions'+Year+'.png')
