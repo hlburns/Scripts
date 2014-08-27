@@ -33,7 +33,7 @@ if len(sys.argv) < 2:
 OP = sys.argv[1]
 #--Set folder structure--# 
 x=os.getcwd()
-lists=glob.glob(x+'/*Psi.nc')
+lists=glob.glob(x+'/'+OP+'/*Psi.nc')
 #--Main For loop--#                                                           
 #For every .nc file in the folder                                             
 #Read in netcdf variables                                                     
