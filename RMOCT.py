@@ -61,7 +61,7 @@ for file in lists:
     psi=np.mean(VTfdz[:,::-1,:],axis=0)/10**6 #Time average and put into Sv and put back in right order
     y=Y/1000
     z=np.array(range(1,60))
-    Rho = np.genfromtxt('Temp', delimiter = ',') 
+    Rho = np.genfromtxt(x+'/'+OP+'/Temp', delimiter = ',') 
     nolayers=len(psi[:,1])
     Rho=Rho[0:nolayers]#The layers package bins a layer so adjust for that
     start=int(np.divide(ti[0],(86400*360)))#Find run start and stop times

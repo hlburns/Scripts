@@ -69,7 +69,7 @@ for file in lists:
     VTfdz=np.cumsum(VT[:,::-1,:],axis=1) #sum up the water column
     psi=np.mean(VTfdz[:,::-1,:],axis=0)/10**6 #Time average and put into Sv and put back in right order
     y=Y/1000
-    Rho = np.genfromtxt('Temp', delimiter = ',') 
+    Rho = np.genfromtxt(x+'/'+str(OP)+'/Temp', delimiter = ',') 
     nolayers=len(psi[:,1])
     Rho=Rho[0:nolayers]#The layers package bins a layer so adjust for that
     start=int(np.divide(ti[0],(86400*360)))#Find run start and stop times
@@ -89,7 +89,7 @@ for file in lists:
     Tav=np.mean(Temp,axis=0)
     V=file2.variables['VVEL']
     V=V[:]*1
-    file2 = netcdf.NetCDFFile('grid.nc','r')
+    file2 = netcdf.NetCDFFile(x+'/'+str(OP)+'/grid.nc','r')
     lm=file2.variables['HFacC']
     Yc=file2.variables['Y']
     Yc=Yc[:]
@@ -151,9 +151,9 @@ for file in lists:
     P3new=linspace(Z[0],Zp[-1],168)
     P3exp=P3(P3new)
     Psied=Psimap-P3exp
-    x=( os.path.expanduser('~')+"/Figures/"+OP)
-    if not os.path.exists(x):
-          os.makedirs(x)
+    x2=( os.path.expanduser('~')+"/Figures/"+OP)
+    if not os.path.exists(x2):
+          os.makedirs(x2)
     Q_levs = (np.arange(-10,10)+0.5)
     Psi_levs = Q_levs / 10
     Q_ticks = np.arange(-8,9,2.)
@@ -169,7 +169,7 @@ for file in lists:
     xlabel('Distance (km)')
     ylabel('Depth (m)')
     cbar.ax.set_ylabel('Psi (sv)')
-    plt.savefig(x+"/PsiEddy"+str(start)+"-"+str(end)+".png")
+    plt.savefig(x2+"/PsiEddy"+str(start)+"-"+str(end)+".png")
     plt.clf()
     cf=plt.contourf(Yc,Zexp,Psimap,Psi_levs,cmap=cm.seismic)
     cbar = plt.colorbar(cf, ticks=Psi_ticks, shrink=0.8)
@@ -178,6 +178,6 @@ for file in lists:
     plt.xlabel('Distance (km)')
     plt.ylabel('Depth (m)')
     cbar.ax.set_ylabel('$\psi_{res}$ (Sv)')
-    plt.savefig(x+"/Psiremapped"+str(start)+"-"+str(end)+".png")
+    plt.savefig(x2+"/Psiremapped"+str(start)+"-"+str(end)+".png")
     plt.clf()    
 

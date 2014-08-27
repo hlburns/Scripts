@@ -33,7 +33,7 @@ if len(sys.argv) < 2:
 OP = sys.argv[1]
 #--Set folder structure--#
 x=os.getcwd()
-lists=glob.glob(x+'/'+OP+'/*all.nc')
+lists=glob.glob(x+'/'+str(OP)+'/*all.nc')
 #--Main For loop--#
 #For every .nc file in the folder
 #Read in netcdf variables
@@ -48,10 +48,10 @@ if not lists:
             (named *all.nc with a grid folder located ../ or                                                                                
             within the folder (for working directories) \n'''
    sys.exit(1)
-file2=netcdf.netcdf_file('grid.nc','r')
+file2=netcdf.netcdf_file(x+'/'+str(OP)+'/grid.nc','r')
 Zp1=file2.variables['Zp1']
 Zp=Zp1[:]*1
-file2=netcdf.netcdf_file('grid.nc','r')
+file2=netcdf.netcdf_file(x+'/'+str(OP)+'/grid.nc','r')
 Z=file2.variables['Z']
 Z=Z[:]
 Y=file2.variables['Yp1']
