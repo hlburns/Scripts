@@ -169,3 +169,27 @@ def remap(file,Rho,X,Yc,Z,Y,Zp):
     Psied=Psimap-P3exp
     return Psimap,Psied,Zexp
        
+# Regridding
+def regridy(Variable):
+    Vc=(Variable[:,:,0:-1,:]+Variable[:,:,1::,:])/2
+    return Vc
+def regridx(Variable):
+    Vc=(Variable[:,:,:,0:-1]+Variable[:,:,:,1::])/2
+    return Vc
+numba_regridy = autojit()(regridy)
+numba_regridy.func_name = "numba_regridy"
+numba_regridx = autojit()(regridx)
+numba_regridx.func_name = "numba_regridx"
+## EKE ##                                                      
+def EKEf(U,V,dx):
+''' Calculate EKE                                                                                    
+'''
+       numba_regridy = autojit()(regridy)
+       numba_regridy.func_name = "numba_regridy"
+       numba_regridx = autojit()(regridx)
+       numba_regridx.func_name = "numba_regridx"
+       Vc=numba_regridy(V)
+       Uc=numba_regridx(U)
+       k=0.5*(Uc**2+Vc**2)
+       EKE=np.nanmean(k)
+       return EKE

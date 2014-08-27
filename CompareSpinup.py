@@ -24,10 +24,11 @@ import sys
 import glob
 from numba import autojit
 sys.path.append(os.path.expanduser('~')+"/bin/")
+from Calculations import *
 #--Take terminal inputs--#
 ''' We have 8 runs:                                                                                  
     3,10,30,100,300,1000,3000,and Closed '''
-tau=[3,10,30,100,300,1000,3000]
+tau=[3,10,30,100,300,1000,3000,10000,'Closed']
 
 #--Set folder structure--#
 x=os.getcwd()
@@ -66,23 +67,13 @@ Z=Z[:]
 Y=file2.variables['Yp1']
 Y=Y[:]
 dx=Y[1]-Y[0] # Find Resolution
-def regridy(Variable):
-    Vc=(Variable[:,:,0:-1,:]+Variable[:,:,1::,:])/2
-    return Vc
-def regridx(Variable):
-    Vc=(Variable[:,:,:,0:-1]+Variable[:,:,:,1::])/2
-    return Vc
+''' NOTE Change the calcuations files to allow for V or filename to be given then you can remove
+    this section of code!
+'''
 numba_regridy = autojit()(regridy)
 numba_regridy.func_name = "numba_regridy"
 numba_regridx = autojit()(regridx)
 numba_regridx.func_name = "numba_regridx"
-## EKE ##                                                                                            
-def EKEf(U,V,dx):
-       Vc=numba_regridy(V)
-       Uc=numba_regridx(U)
-       k=0.5*(Uc**2+Vc**2)
-       EKE=np.nanmean(k)
-       return EKE
 ## RMOC ##
 def RMOC(file):
     file2read = netcdf.NetCDFFile(file,'r')
@@ -124,6 +115,7 @@ MOCplt=plt.subplot(322)
 RMOCplt=plt.subplot(323)
 RMOCminplt=plt.subplot(324)
 EKEplt=plt.subplot(325)
+''' Add comments'''
 for i in range(len(Runs)):
 #for i in range(1):
     lists=glob.glob(x+'/'+str(tau[Runs[i]])+'daynokpp/*all.nc')
@@ -133,6 +125,13 @@ for i in range(len(Runs)):
     tempts=[]
     psitsmin=[]
     TS=[]
+    #Start with 0!
+    Psits.append(0)
+    EKEts.append(0)
+    psits.append(0)
+    tempts.append(0)
+    psitsmin.append(0)
+    TS.append(0)
     for file in lists:
            file2read = netcdf.NetCDFFile(file,'r')
            V=file2read.variables['VVEL']
@@ -162,7 +161,7 @@ for i in range(len(Runs)):
            tempts.append(tempav)
            Psits.append(Psi)
            TS.append(T)
-           #print '.'
+           
     EKEts=np.array(EKEts)
     psits=np.array(psits)
     psitsmin=np.array(psitsmin)
@@ -205,20 +204,11 @@ runnames=[]
 for i in range(len(Runs)):
     runnames.append(tau[Runs[i]])
 lgd=plt.legend(runnames,bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-#MOCplt.legend(runnames,loc='upper center', shadow=True)
-#EKEplt.legend(runnames,loc='upper center', shadow=True)
-#Tempplt.plt.legend(runnames,loc='upper center', shadow=True)
-#RMOCplt.legend(runnames,loc='upper center', shadow=True)
-#RMOCminplt.legend(runnames,loc='upper center', shadow=True)
 x=( os.path.expanduser('~')+"/Figures")
 if not os.path.exists(x):
          os.makedirs(x)
-#MOCplt.savefig(x+'/MOCspinup.png')
-#EKEplt.savefig(x+'/KEspinup.png')
 plt.tight_layout()
 plt.savefig(x+'/spinup.png',bbox_extra_artists=(lgd,), bbox_inches='tight')
-#RMOCplt.savefig(x+'/RMOCmaxspinup.png')
-#RMOCminplt.savefig(x+'/RMOCminspinup.png')
 
 
 
