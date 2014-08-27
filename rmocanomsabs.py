@@ -22,14 +22,14 @@ import sys
 import glob
 from Calculations import remap
 ##~~~~~~~~~~Set up and sanity checks~~~~~~~~~~~##                                                    
-''' We have 8 runs:                                                                                  
+''' We have 9 runs:                                                                                  
     3,10,30,100,300,1000,3000,and Closed '''
 if len(sys.argv) < 1:
    print '''\n    OOPSIE                                                                             
             usage:  give me a year to calculate over \n'''
    sys.exit(1)
 Year = sys.argv[1]
-tau=['3','10','30','100','300','1000','3000','Closed']
+tau=['3','10','30','100','300','1000','3000','10000','Closed']
 #Check what files exist                                                                              
 ''' Let me know what files are missing '''
 check=0
