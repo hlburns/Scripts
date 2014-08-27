@@ -11,7 +11,7 @@ import sys
 sys.path.append(os.path.expanduser('~')+"/bin/")
 from Calculations import MOC, find_nearest, regrid , RMOC, remap
 
-''' We have 8 runs:
+''' We have 9 runs:
     3,10,30,100,300,1000,3000,and Closed '''
 if len(sys.argv) < 1:
    print '''\n    OOPSIE                                                                             

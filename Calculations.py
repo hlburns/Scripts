@@ -9,6 +9,14 @@ from scipy.interpolate import interp1d
 from scipy import interpolate
 ## MOC ##                                                                                            
 def MOC(file,Y,Z,Zp):
+    '''Calculates MOC from the filename (to read in
+       changing V) and Yp1, Z and Zp from the grid
+       file. In the future you should add in to read
+       Y,Z,Zp from the file if they're not already 
+       there. 
+       Outputs Psi in Sv and Initial time of file
+       in years.
+    '''
        file2read = netcdf.NetCDFFile(file,'r')
        V=file2read.variables['VVEL']
        V=V[:]
@@ -34,6 +42,12 @@ def MOC(file,Y,Z,Zp):
 
 ## RMOC ##                                                                                           
 def RMOC(file,Y):
+''' Calculates the RMOC in temperature space
+    from the filename and Y from the grid file.
+    In future add the option to read in Y from 
+    file if not present.
+    Outputs Psi in Sv and initial time of file. 
+'''
     file2read = netcdf.NetCDFFile(file,'r')
     lvrho=file2read.variables["LaVH1TH"]
     lvrho=lvrho[:]
@@ -52,14 +66,32 @@ def RMOC(file,Y):
     return psi,T
 
 def find_nearest(array,value):
+''' What it says on the tin really.
+'''
     idx = (np.abs(array-value)).argmin()
     return array[idx]
 
 def regrid(Variable):
+''' Regrid from Yp1 to Y
+    Stickthis to a numba function for
+    for loops!
+'''
     Vc=(Variable[:,0:-1]+Variable[:,1::])/2
     return Vc
 
 def remap(file,Rho,X,Yc,Z,Y,Zp):
+''' Remap the RMOCT into Z=space 
+    Read in the *all.nc and the X, Y,Z
+    from the grid file. Calculates RMOCT
+    and gets the temp feild
+    Then interpolates both the temperature
+    and Psi field to give a smooth result.
+    Calclates the MOC as well and iterpolates
+    it to the same fine grid so we can take
+    the timeaveraged part from the resdiual 
+    to give the eddy overturning as well with 
+    out the high temporal frequency data - nice! 
+'''
     numba_regrid = autojit()(regrid)
     numba_regrid.func_name = "numba_regrid"
     #Make the file names to read
