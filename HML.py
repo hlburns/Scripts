@@ -17,7 +17,10 @@ if len(sys.argv) < 1:
             usage:  give me a year to calculate over \n'''
    sys.exit(1)
 Year = sys.argv[1]
-tau=['3','10','30','100','300','1000','3000','10000','Closed']
+#tau=['3','10','30','100','300','1000','3000','10000','Closed']
+tau=['3','30','300','3000','Closed']  
+mycols=['b','g','r','c','m','y','k','r','g']
+#linestyles=['_','_','_','_','_','_','-','-','-']
 #Check what files exist                                                                              
 ''' Let me know what files are missing '''
 check=0
@@ -50,7 +53,7 @@ for i in range(len(Runs)):
     hml=hml[:] 
     hml=np.squeeze(hml)
     hmlav=np.mean(hml,1) 
-    plt.plot(yc,hml,linewidth=2)
+    plt.plot(yc,hml,linewidth=2,color=mycols[i])
     plt.title(str(tau[Runs[i]])+"daynokpp. Average mixlayer depth for years "+Year+")")
     plt.xlabel(r'Distance (km)')
     plt.ylabel('Depth (m)') 

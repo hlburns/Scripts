@@ -38,6 +38,12 @@ VTAVC=np.squeeze(VC)
 TTAV=np.squeeze(Temp[:]*1)
 # Load in each file and find V'T' and timeaverage it!
 lists=glob.glob(x+'/'+str(OP)+'/*all.nc')
+VTprimetav20=0
+VTbar20=0
+if '240-260all.nc' in lists:
+    total=len(lists)-1
+else:
+    total=len(lists)
 for file in lists:
     if file=='240-260all.nc':
         continue
@@ -49,15 +55,22 @@ for file in lists:
     Tprime=Temp[:]*1-TTAV[:]*1
     VTprime=Vprime*Tprime
     VTprimetav=np.mean(VTprime,axis=0)
-    if not 'VTpimetav20' in locals():
-        VTprimetav20=VTprimetav
-    else:
-        VTprimetav20=(VTprimetav20+VTprimetav)/2
+    VTprimetav20=VTprimetav20+VTprimetav/total
+    VTbar=np.mean(Vc*Temp[:]*1,axis=0)
+    VTbar20=VTbar20+VTbar/total
 # Write to nc format
-f=netcdf.netcdf_file(x+'/'+str(OP)+'/VTbar.nc','w')
+f=netcdf.netcdf_file(x+'/'+str(OP)+'/VTprimebar.nc','w')
 f.createDimension('X',len(VTprimetav20[1,1,:]))
 f.createDimension('Y',len(VTprimetav20[1,:,1]))
 f.createDimension('Z',len(VTprimetav20[:,1,1]))
 VT=f.createVariable('VT','double',('Z','Y','X'))
 VT[:]=VTprimetav20
+f.close()
+# Write to nc format                                                                                  
+f=netcdf.netcdf_file(x+'/'+str(OP)+'/VTbar.nc','w')
+f.createDimension('X',len(VTbar20[1,1,:]))
+f.createDimension('Y',len(VTbar[1,:,1]))
+f.createDimension('Z',len(VTbar[:,1,1]))
+VT=f.createVariable('VT','double',('Z','Y','X'))
+VT[:]=VTbar20
 f.close()
