@@ -53,12 +53,39 @@ def regrid(Variable):
     return Vc
 numba_regrid = autojit()(regrid)
 numba_regrid.func_name = "numba_regrid"
+file2=netcdf.netcdf_file(x+'/'+str(OP)+'/grid.nc','r')
+Z=file2.variables['Z']
+Z=Z[:]*1
+Zp1=file2.variables['Zp1']
+Zp=Zp1[:]
+Y=file2.variables['Yp1']
+Y=Y[:]*1
+X=file2.variables['X']
+X=X[:]*1
+lm=file2.variables['HFacC']
+Yc=file2.variables['Y']
+Yc=Yc[:]
+Z=file2.variables['Z']
+Z=Z[:]*1
+X=file2.variables['X']
+X=X[:]*1
+lm=lm[:]
+lmc=np.array(lm)
+lmc[lmc<1]=np.nan
+if len(X)>400 :
+    Q_levs = (np.arange(-50,50,2.5))
+    Psi_levs = Q_levs / 10
+    Q_ticks = np.arange(-50,50,5.)
+    Psi_ticks = Q_ticks / 10
+else:
+    Q_levs = (np.arange(-10,10)+0.5)
+    Psi_levs = Q_levs / 10
+    Q_ticks = np.arange(-8,9,2.)
+    Psi_ticks = Q_ticks / 10
 for file in lists:
     file2read = netcdf.NetCDFFile(file,'r')
     lvrho=file2read.variables["LaVH1TH"]
     lvrho=lvrho[:]
-    Y=file2read.variables['Yp1']
-    Y=Y[:]
     time=file2read.variables['T']
     ti=time[:]
     #Stop memory issues!!
@@ -89,24 +116,11 @@ for file in lists:
     Tav=np.mean(Temp,axis=0)
     V=file2.variables['VVEL']
     V=V[:]*1
-    file2 = netcdf.NetCDFFile(x+'/'+str(OP)+'/grid.nc','r')
-    lm=file2.variables['HFacC']
-    Yc=file2.variables['Y']
-    Yc=Yc[:]
-    Z=file2.variables['Z']
-    Z=Z[:]*1
-    X=file2.variables['X']
-    X=X[:]*1
-    lm=lm[:]
-    lmc=np.array(lm)
-    lmc[lmc<1]=np.nan
     Tavlat=np.mean(Tav,axis=2)
     Yc=Yc/1000
     lmav=np.mean(lmc,axis=2)
     Vtave=np.mean(V,axis = 0)
-    Zp1=file2.variables['Zp1']
-    Zp=Zp1[:]
-    Vtave[Vtave==0]=np.nan
+    #Vtave[Vtave==0]=np.nan
     Vzone=np.nansum(Vtave*dx,axis = 2)
     dz=Zp[0:len(Zp)-1]-Zp[1:len(Zp)]
     # No more super slow forloop!
@@ -154,22 +168,16 @@ for file in lists:
     x2=( os.path.expanduser('~')+"/Figures/"+OP)
     if not os.path.exists(x2):
           os.makedirs(x2)
-    Q_levs = (np.arange(-10,10)+0.5)
-    Psi_levs = Q_levs / 10
-    Q_ticks = np.arange(-8,9,2.)
-    Psi_ticks = Q_ticks / 10
-    Eddy_ticks =  (np.arange(-30,10,4.))/10
-    E_levs = (np.arange(-30,10)+0.5)/10
     if np.max(abs(psi))>1:
        Psi_levs = (np.arange(-25,25)+0.5)/10
-    cf1=plt.contourf(Yc,Zexp,Psied,E_levs,cmap=cm.seismic) #Use b2r colourmap                        
-    clim(-2.5,2.5) # Put 0 to white
-    cbar = plt.colorbar(cf1, ticks=Eddy_ticks, shrink=0.8)                           
-    title("Eddy MOC year "+str(start)+" "+OP)
+    cf1=plt.contourf(Yc,Zexp,Psimap,Psi_levs,cmap=cm.seismic) #Use b2r colourmap                     
+    #clim(-2.5,2.5) # Put 0 to white
+    cbar = plt.colorbar(cf1, ticks=Psi_ticks, shrink=0.8)                           
+    title("ROC (y,z) year "+str(start)+" "+OP)
     xlabel('Distance (km)')
     ylabel('Depth (m)')
     cbar.ax.set_ylabel('Psi (sv)')
-    plt.savefig(x2+"/PsiEddy"+str(start)+"-"+str(end)+".png")
+    plt.savefig(x2+"/ROCremap"+str(start)+"-"+str(end)+".png")
     plt.clf()
     cf=plt.contourf(Yc,Zexp,Psimap,Psi_levs,cmap=cm.seismic)
     cbar = plt.colorbar(cf, ticks=Psi_ticks, shrink=0.8)

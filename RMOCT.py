@@ -46,13 +46,27 @@ if not lists:
             (named *all.nc with a grid folder located ../ or       
             within the folder (for working directories) \n'''
    sys.exit(1)
- 
+file2=netcdf.netcdf_file(x+'/'+str(OP)+'/grid.nc','r')
+Z=file2.variables['Z']
+Z=Z[:]
+Y=file2.variables['Yp1']
+Y=Y[:]
+X=file2.variables['X']
+X=X[:]
+if len(X)>400 :
+    Q_levs = (np.arange(-50,50,2.5))
+    Psi_levs = Q_levs / 10
+    Q_ticks = np.arange(-50,50,5.)
+    Psi_ticks = Q_ticks / 10
+else:
+    Q_levs = (np.arange(-10,10)+0.5)
+    Psi_levs = Q_levs / 10
+    Q_ticks = np.arange(-8,9,2.)
+    Psi_ticks = Q_ticks / 10
 for file in lists:
     file2read = netcdf.NetCDFFile(file,'r')
     lvrho=file2read.variables["LaVH1TH"]
     lvrho=lvrho[:]
-    Y=file2read.variables['Yp1']
-    Y=Y[:]
     time=file2read.variables['T']
     ti=time[:]
     dx=Y[1]-Y[0] # Find Resolution
@@ -66,23 +80,19 @@ for file in lists:
     Rho=Rho[0:nolayers]#The layers package bins a layer so adjust for that
     start=int(np.divide(ti[0],(86400*360)))#Find run start and stop times
     end=int(np.divide(ti[-1],(86400*360)))
-    Q_levs = (np.arange(-10,10)+0.5)
-    Psi_levs = Q_levs / 10
-    Q_ticks = np.arange(-8,9,2.)
-    Psi_ticks = Q_ticks / 10
-    if np.max(abs(psi))>1:
-       Psi_levs = (np.arange(-25,25)+0.5)/10
+    #if np.max(abs(psi))>3:
+    #   Psi_levs = (np.arange(-25,25)+0.5)/10
     cf=plt.contourf(y,Rho,psi,Psi_levs,cmap=plt.cm.seismic) #Use b2r colourmap 
-    plt.clim(-1,1) # Put 0 to white
+    #plt.clim(-1,1) # Put 0 to white
     cbar=plt.colorbar(cf, ticks=Psi_ticks, shrink=0.8)
     plt.title("RMOC for years "+str(start)+"-"+str(end)+" ")
     plt.xlabel('Distance (km)')
     plt.ylabel('Temperature $^o$C')
     cbar.ax.set_ylabel('$\psi \,\, (sv)$')
-    x=( os.path.expanduser('~')+"/Figures/"+OP)
-    if not os.path.exists(x):
-          os.makedirs(x)
-    plt.savefig(x+"/Psires"+str(start)+"-"+str(end)+".png")
+    figpath=( os.path.expanduser('~')+"/Figures/"+OP)
+    if not os.path.exists(figpath):
+          os.makedirs(figpath)
+    plt.savefig(figpath+"/Psires"+str(start)+"-"+str(end)+".png")
     plt.clf()
     
 

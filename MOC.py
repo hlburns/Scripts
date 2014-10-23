@@ -56,6 +56,18 @@ Z=file2.variables['Z']
 Z=Z[:]
 Y=file2.variables['Yp1']
 Y=Y[:]
+X=file2.variables['X']
+X=X[:]
+if len(X)>400 :
+    Q_levs = (np.arange(-0,150,10.))
+    Psi_levs = Q_levs / 10
+    Q_ticks = np.arange(0,150,20.)
+    Psi_ticks = Q_ticks / 10
+else:
+    Q_levs = (np.arange(-0,30)+0.5)
+    Psi_levs = Q_levs / 10
+    Q_ticks = np.arange(0,30,3.)
+    Psi_ticks = Q_ticks / 10
 for file in lists:
        file2read = netcdf.NetCDFFile(file,'r')
        V=file2read.variables['VVEL']
@@ -65,7 +77,7 @@ for file in lists:
        ti=time[:]
        dx=Y[1]-Y[0]
        Vtave=np.mean(V,axis = 0)
-       Vtave[Vtave==0]=np.nan
+       #Vtave[Vtave==0]=np.nan
        Vzone=np.nansum(Vtave,axis = 2)*dx
        dz=Zp[0:len(Zp)-1]-Zp[1:len(Zp)]
        # Got rid of for loop here (much quicker!!)                                             
@@ -73,17 +85,13 @@ for file in lists:
        psi=np.cumsum(-psi2[::-1,:],axis=0)
        npad = ((0,1), (0,0))
        # Pad with zeros at bottom                                                                    
-       psi = np.pad(psi, pad_width=npad, mode='constant', constant_values=0)
+       psi = np.pad(psi[::-1,:], pad_width=npad, mode='constant', constant_values=0)
        y =Y/1000
        Psi=psi/10**6 #Convert to Sv
        start=int(np.divide(ti[0],(86400*360)))
        end=int(np.divide(ti[-1],(86400*360)))
-       Q_levs = (np.arange(-0,30)+0.5)
-       Psi_levs = Q_levs / 10
-       Q_ticks = np.arange(0,30,3.)
-       Psi_ticks = Q_ticks / 10
        cf=contourf(y,Zp,Psi,Psi_levs,cmap=cm.seismic) #Use b2r colourmap
-       clim(-2.5,2.5) # Put 0 to white
+       clim(-15,15) # Put 0 to white
        cbar = colorbar(cf, ticks=Psi_ticks, shrink=0.8)
        title("MOC years "+str(start)+"-"+str(end))
        xlabel('Distance (km)')
